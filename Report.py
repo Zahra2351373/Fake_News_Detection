@@ -5,7 +5,17 @@ import tensorflow as tf
 import matplotlib.pyplot as plt
 import nltk
 import textstat as ts
+import time
+import string
+import re
+from  sklearn.metrics  import accuracy_score
+from sklearn.metrics import classification_report, confusion_matrix, roc_curve
+from sklearn.feature_extraction.text import TfidfTransformer
+from sklearn.feature_extraction.text import TfidfVectorizer
+from sklearn.naive_bayes import MultinomialNB
 from numpy.random import seed
+from nltk.tokenize import word_tokenize
+from nltk.corpus import stopwords
 seed(100)
 nltk.download('stopwords')
 
@@ -20,10 +30,7 @@ del all_news['subject']
 del all_news['date']
 del all_news['title']
 
-from nltk.tokenize import word_tokenize
-from nltk.corpus import stopwords
-import string
-import re
+
 
 def remove_punctuations(text):
     text  = "".join([char for char in text if char not in string.punctuation])
@@ -84,23 +91,19 @@ validation_X = all_news_processed.loc[37000:, "text"].values
 validation_Y = all_news_processed.loc[37000:, "label"].values
 
 
-from sklearn.feature_extraction.text import TfidfTransformer
-from sklearn.feature_extraction.text import TfidfVectorizer
+
 vectorizer = TfidfVectorizer()
 train_vectors = vectorizer.fit_transform(train_X)
 validation_vectors = vectorizer.transform(validation_X)
 
-from sklearn.naive_bayes import MultinomialNB
-import time
+
 start = time.time()
 mnb_classifier = MultinomialNB().fit(train_vectors, train_Y)
 end = time.time()
 
-from  sklearn.metrics  import accuracy_score
 mnb_predicted = mnb_classifier.predict(validation_vectors)
 print("Accuracy of MNB: {}".format(accuracy_score(validation_Y, mnb_predicted)))
 
-from sklearn.metrics import classification_report, confusion_matrix, roc_curve
 
 print("A Report Of My Model:")
 
